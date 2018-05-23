@@ -60,7 +60,7 @@ class UtilsTest(unittest.TestCase):
 
         with pytest.raises(ValueError) as e:
             split_bloomberg_ticker('AAPL Equity')
-        assert str(e.value) == "Invalid Bloomberg ticker code"
+        assert str(e.value) == "Invalid Bloomberg ticker code - AAPL Equity"
 
     def test_get_alphabet_ordinal(self):
         assert get_alphabet_ordinal('a') == 1
@@ -97,3 +97,8 @@ class UtilsTest(unittest.TestCase):
         assert generate_cusip(**{TICKER: 'LA', EXPIRATION_MONTH: 'Z', EXPIRATION_YEAR: 2018}) == 'LAZ820180'
         assert generate_cusip(**{TICKER: 'OAT', EXPIRATION_MONTH: 'Z', EXPIRATION_YEAR: 2017}) == 'OATZ72011'
         assert generate_cusip(**split_bloomberg_ticker('ESZ18 Index')) == 'ESZ820189'
+        assert generate_cusip(**split_bloomberg_ticker('C Z8 Comdty')) == 'CZ8201881'
+
+    def test_generate_cusip_from_tickers(self):
+        assert generate_cusip_from_tickers(['ESZ18 Index', 'C Z8 Comdty']) == ['ESZ820189', 'CZ8201881']
+        assert generate_cusip_from_tickers(['ESZ18 Index', 'C Z8 Comdty']) == ['ESZ820189', 'CZ8201881']

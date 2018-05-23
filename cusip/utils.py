@@ -89,11 +89,11 @@ def split_bloomberg_ticker(bloomberg_ticker):
             EXPIRATION_YEAR: calc_year(int(match.group(EXPIRATION_YEAR))),
             SECTOR: match.group(SECTOR),
         })
-    raise ValueError("Invalid Bloomberg ticker code")
+    raise ValueError("Invalid Bloomberg ticker code - %s" % bloomberg_ticker)
 
 
 def get_alphabet_ordinal(c):
-    if type(c) != str:
+    if not isinstance(c, str):
         raise TypeError("Only string allowed")
     return ord(c) - 96
 
@@ -101,7 +101,7 @@ def get_alphabet_ordinal(c):
 def check_cusip_digit(cusip):
     sum = 0
 
-    if type(cusip) != str:
+    if not isinstance(cusip, str):
         raise TypeError("Only string allowed")
 
     if len(cusip) != 8:
@@ -150,5 +150,13 @@ def generate_cusip(**kwargs):
         year = str(expiration_year)[:-1]
 
     s = "%s%s%s%s" % (ticker, expiration_month, final_digit_year, year)
-    print(s)
     return "%s%s" % (s, check_cusip_digit(s))
+
+
+def generate_cusip_from_tickers(tickers):
+    """
+    Generate CUSIP from a list of tickers
+    :param tickers:
+    :return:
+    """
+    return [generate_cusip(**split_bloomberg_ticker(ticker.strip())) for ticker in tickers]

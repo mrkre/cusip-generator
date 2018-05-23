@@ -5,5 +5,5 @@ load_dotenv()
 
 
 class Config(object):
-    ENV = os.environ.get('ENV', 'dev')
-    DEBUG = os.environ.get('DEBUG', ENV == 'dev')
+    ENV = os.environ.get('ENV')
+    DEBUG = os.environ.get('DEBUG', ENV != 'production')
