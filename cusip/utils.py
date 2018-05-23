@@ -92,15 +92,63 @@ def split_bloomberg_ticker(bloomberg_ticker):
     raise ValueError("Invalid Bloomberg ticker code")
 
 
-def generate_cusip(ticker, expiration_month, expiration_year):
+def get_alphabet_ordinal(c):
+    if type(c) != str:
+        raise TypeError("Only string allowed")
+    return ord(c) - 96
+
+
+def check_cusip_digit(cusip):
+    sum = 0
+
+    if type(cusip) != str:
+        raise TypeError("Only string allowed")
+
+    if len(cusip) != 8:
+        raise ValueError("Expected cusip to contain 8 characters")
+
+    for i, c in enumerate(list(cusip)):
+        if c.isdigit():
+            v = int(c)
+        elif c.isalpha():
+            p = get_alphabet_ordinal(c.lower())
+            v = p + 9
+        elif c == '*':
+            v = 36
+        elif c == '@':
+            v = 37
+        elif c == '#':
+            v = 38
+        else:
+            raise ValueError("cusip contains illegal character - %s at position %s" % (c, i))
+
+        if (i + 1) % 2 == 0:
+            v *= 2
+
+        sum += int(v / 10) + int(v % 10)
+
+    return (10 - (sum % 10)) % 10
+
+
+def generate_cusip(**kwargs):
     """
-    Generate CUSIP
-    :param ticker:
-    :param ticker: str
-    :param expiration_month:
-    :param expiration_month: str
-    :param expiration_year:
-    :param expiration_year: str or int
+    Generate CUSIP based on kwargs passed
+    :param kwargs:
     :return:
     """
-    return "%s%s%s%s" % (ticker, expiration_month, str(expiration_year)[-1], str(expiration_year))
+    ticker = kwargs[TICKER]
+    expiration_month = kwargs[EXPIRATION_MONTH]
+    expiration_year = kwargs[EXPIRATION_YEAR]
+
+    final_digit_year = str(expiration_year)[-1]
+    year = str(expiration_year)
+
+    ticker_length = len(ticker)
+    if ticker_length == 1:
+        year += str(expiration_year)[-1]
+    elif ticker_length == 3:
+        year = str(expiration_year)[:-1]
+
+    s = "%s%s%s%s" % (ticker, expiration_month, final_digit_year, year)
+    print(s)
+    return "%s%s" % (s, check_cusip_digit(s))

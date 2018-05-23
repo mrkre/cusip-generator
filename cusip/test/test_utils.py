@@ -24,6 +24,16 @@ class UtilsTest(unittest.TestCase):
             get_expiration_month_code(13)
         assert str(e.value) == "Only 12 months in a year"
 
+    def test_round_down(self):
+        assert round_down(7) == 0
+        assert round_down(17) == 10
+        assert round_down(2018) == 2010
+
+    def test_round_up(self):
+        assert round_up(7) == 10
+        assert round_up(17) == 20
+        assert round_up(2018) == 2020
+
     def test_calc_year(self):
         assert calc_year(3, 2015) == 2023
         assert calc_year(7, 2017) == 2017
@@ -52,7 +62,38 @@ class UtilsTest(unittest.TestCase):
             split_bloomberg_ticker('AAPL Equity')
         assert str(e.value) == "Invalid Bloomberg ticker code"
 
+    def test_get_alphabet_ordinal(self):
+        assert get_alphabet_ordinal('a') == 1
+        assert get_alphabet_ordinal('z') == 26
+
+        with pytest.raises(TypeError) as e:
+            get_alphabet_ordinal(1)
+        assert str(e.value) == "Only string allowed"
+
+    def test_check_cusip_digit(self):
+        assert check_cusip_digit('03783310') == 0
+        assert check_cusip_digit('17275R10') == 2
+        assert check_cusip_digit('38259P50') == 8
+        assert check_cusip_digit('AIH82018') == 5
+        assert check_cusip_digit('CZ720177') == 5
+        assert check_cusip_digit('LAZ82018') == 0
+        assert check_cusip_digit('ESZ82018') == 9
+
+        with pytest.raises(TypeError) as e:
+            check_cusip_digit(1234567)
+        assert str(e.value) == "Only string allowed"
+
+        with pytest.raises(ValueError) as e:
+            check_cusip_digit('1234567')
+        assert str(e.value) == "Expected cusip to contain 8 characters"
+
+        with pytest.raises(ValueError) as e:
+            check_cusip_digit('^^^^^^^^')
+        assert str(e.value) == "cusip contains illegal character - ^ at position 0"
+
     def test_generate_cusip(self):
-        components = split_bloomberg_ticker('ESZ18 Index')
-        assert generate_cusip(ticker=components[TICKER], expiration_month=components[EXPIRATION_MONTH],
-                              expiration_year=components[EXPIRATION_YEAR]) == 'ESZ82018'
+        assert generate_cusip(**{TICKER: 'AI', EXPIRATION_MONTH: 'H', EXPIRATION_YEAR: 2018}) == 'AIH820185'
+        assert generate_cusip(**{TICKER: 'C', EXPIRATION_MONTH: 'Z', EXPIRATION_YEAR: 2017}) == 'CZ7201775'
+        assert generate_cusip(**{TICKER: 'LA', EXPIRATION_MONTH: 'Z', EXPIRATION_YEAR: 2018}) == 'LAZ820180'
+        assert generate_cusip(**{TICKER: 'OAT', EXPIRATION_MONTH: 'Z', EXPIRATION_YEAR: 2017}) == 'OATZ72011'
+        assert generate_cusip(**split_bloomberg_ticker('ESZ18 Index')) == 'ESZ820189'
