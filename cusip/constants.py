@@ -1,6 +1,16 @@
 # -*- coding: utf-8 -*-
-BLOOMBERG_REGEX = r"^(?P<ticker>[A-Z]{1,3}|[A-Z]\s)(?P<expiry_month>[FGHJKMNQUVXZ])(?P<expiry_year>\d{1,2}) " \
-                  r"(?P<sector>Index|Comdty)$"
+FUTURES_MONTHS = 'FGHJKMNQUVXZ'
+
+TICKER = 'ticker'
+
+EXPIRATION_MONTH = 'expiration_month'
+
+EXPIRATION_YEAR = 'expiration_year'
+
+SECTOR = 'sector'
+
+BLOOMBERG_REGEX = r"^(?P<%s>[A-Z]{1,3}|[A-Z]\s)(?P<%s>[%s])(?P<%s>\d{1,2}) (?P<%s>Index|Comdty)$" % \
+                  (TICKER, EXPIRATION_MONTH, FUTURES_MONTHS, EXPIRATION_YEAR, SECTOR)
 
 FUTURES_EXPIRY_MONTH_MAP = {
     'F': 1,
