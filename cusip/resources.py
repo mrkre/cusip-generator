@@ -18,7 +18,10 @@ class Cusip(Resource):
             if isinstance(json_data['tickers'], list):
                 tickers = json_data['tickers']
             elif isinstance(json_data['tickers'], str):
-                tickers = json_data['tickers'].split(',')
+                if json_data['tickers'].count('\n') > 0:
+                    tickers = json_data['tickers'].splitlines()
+                else:
+                    tickers = json_data['tickers'].split(',')
             else:
                 return abort(400, message="tickers must be a list or comma-delimited string")
 

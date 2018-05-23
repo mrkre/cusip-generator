@@ -14,7 +14,17 @@ class TestCusipResources(unittest.TestCase):
 
         self.assertEquals(json.loads(response.get_data().decode()), {'results': ['ESZ820189']})
 
+        response = self.app.post('/api/v1/cusip', json={'tickers': 'ESZ18 Index, C Z8 Comdty'})
+
+        self.assertEquals(json.loads(response.get_data().decode()), {'results': ['ESZ820189', 'CZ8201881']})
+
+    def test_cusip_post_str_split(self):
+        response = self.app.post('/api/v1/cusip', json={'tickers': 'ESZ18 Index\nC Z8 Comdty'})
+
+        self.assertEquals(json.loads(response.get_data().decode()), {'results': ['ESZ820189', 'CZ8201881']})
+
     def test_cusip_post_list(self):
         response = self.app.post('/api/v1/cusip', json={'tickers': ['ESZ18 Index', 'C Z8 Comdty']})
 
         self.assertEquals(json.loads(response.get_data().decode()), {'results': ['ESZ820189', 'CZ8201881']})
+
