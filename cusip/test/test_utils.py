@@ -51,3 +51,8 @@ class UtilsTest(unittest.TestCase):
         with pytest.raises(ValueError) as e:
             split_bloomberg_ticker('AAPL Equity')
         assert str(e.value) == "Invalid Bloomberg ticker code"
+
+    def test_generate_cusip(self):
+        components = split_bloomberg_ticker('ESZ18 Index')
+        assert generate_cusip(ticker=components[TICKER], expiration_month=components[EXPIRATION_MONTH],
+                              expiration_year=components[EXPIRATION_YEAR]) == 'ESZ82018'

@@ -90,3 +90,17 @@ def split_bloomberg_ticker(bloomberg_ticker):
             SECTOR: match.group(SECTOR),
         })
     raise ValueError("Invalid Bloomberg ticker code")
+
+
+def generate_cusip(ticker, expiration_month, expiration_year):
+    """
+    Generate CUSIP
+    :param ticker:
+    :param ticker: str
+    :param expiration_month:
+    :param expiration_month: str
+    :param expiration_year:
+    :param expiration_year: str or int
+    :return:
+    """
+    return "%s%s%s%s" % (ticker, expiration_month, str(expiration_year)[-1], str(expiration_year))
