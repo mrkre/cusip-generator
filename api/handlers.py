@@ -13,7 +13,7 @@ class JSONExceptionHandler(object):
                 self.register(code)
 
     def std_handler(self, error):
-        response = jsonify(message=error.message)
+        response = jsonify(message=str(error))
         response.status_code = error.code if isinstance(error, HTTPException) else 500
         return response
 
